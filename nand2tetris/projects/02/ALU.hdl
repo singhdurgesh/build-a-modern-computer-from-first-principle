@@ -43,4 +43,41 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+   //zx
+   Mux16(a=x, b=false, sel=zx, out=Outzx);
+
+   //nx
+   Not16(in=Outzx, out=Notx);
+   Mux16(a=Outzx, b=Notx, sel=nx, out=Outnx);
+
+   //zy
+   Mux16(a=y, b=false, sel=zy, out=Outzy);
+
+   //ny
+   Not16(in=Outzy, out=Noty);
+   Mux16(a=Outzy, b=Noty, sel=ny, out=Outny);
+
+   //f
+   Add16(a=Outnx, b=Outny, out=out1);
+   And16(a=Outnx, b=Outny, out=out2);
+   Mux16(a=out2, b=out1, sel=f, out=Outf);
+
+   //no
+   Not16(in=Outf, out=out3);
+   Mux16(a=Outf, b=out3, sel=no, out=finalout);
+
+   //output
+   Or16(a=finalout, b=false, out=out);
+
+   //zr
+   // To check if a number is zero, we will negate the number and compare last
+   // digit(out[15]) (if same: zero, else non_zero)
+   Not16(in=finalout, out=Outnot);
+   Inc16(in=Outnot, out=Nout);
+
+   Or16(a=finalout, b=Nout, out[15]=Nzr);
+   Not(in=Nzr, out=zr);
+
+   //ng
+   Or16(a=finalout, b=false, out[15]=ng);
 }
